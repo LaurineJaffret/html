@@ -6,12 +6,16 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import simplejdbc.DAO;
+import simplejdbc.CustomerEntity;
+import simplejdbc.DAOException;
+import simplejdbc.DataSourceFactory;
 
 /**
  *
@@ -32,6 +36,9 @@ public class NewServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        String state = request.getParameter("state");
+	ExtendedDAO dao = new ExtendedDAO(DataSourceFactory.getDataSource());
+        List<CustomerEntity> customers = dao.customersInState(state);
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
@@ -41,27 +48,17 @@ public class NewServlet extends HttpServlet {
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet NewServlet at " + request.getContextPath() + "</h1>");
-            out.println("<table>");
-            out.println("<tr>");
-            out.println("<th>Id</th>");
-            out.println("<th>Name</th>");
-            out.println("<th>Address</th>");
-            out.println("</tr>");
-            out.println("<tr>");
-            out.println("<td>36</td>");
-            out.println("<td>bob Hosting Corp.</td>");
-            out.println("<td>65653 Lake Road</td>");
-            out.println("</tr>");
-            out.println("<tr>");
-            out.println("<td></td>");
-            out.println("<td></td>");
-            out.println("<td></td>");
-            out.println("</tr>");
-            out.println("/table");
             out.println();
+            out.println("<table border=2>");
+            out.println("<tr><th>Id</th><th>Name</th><th>Adress</th></tr>");
+            
+            for(CustomerEntity c : customers){
+                out.printf("<tr> <td>%d</td> <td>%s</td> <td>%s</td> </tr>%n",c.getCustomerId(),c.getName(),c.getAddressLine1());
+                
+                
+            }
+            out.println("</table>");
             out.println();
-            
-            
             out.println("</body>");
             out.println("</html>");
         }
